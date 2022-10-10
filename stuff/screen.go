@@ -1,11 +1,11 @@
-package main
+package stuff
 
 import (
 	"log"
 	"tcell"
 )
 
-func drawText(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style, text string) {
+func DrawText(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style, text string) {
 	row := y1
 	col := x1
 	for _, r := range []rune(text) {
@@ -20,12 +20,12 @@ func drawText(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style, text string
 		}
 	}
 }
-func printLines(s tcell.Screen, lines []string) {
+func PrintLines(s tcell.Screen, lines []string) {
 	for i := 0; i < len(lines); i++ {
-		drawText(s, 0, i, 100, i, tcell.StyleDefault, lines[i])
+		DrawText(s, 0, i, 100, i, tcell.StyleDefault, lines[i])
 	}
 }
-func initScreen() tcell.Screen {
+func InitScreen() tcell.Screen {
 	s, err := tcell.NewScreen()
 	if err != nil {
 		log.Fatalf("%+v", err)

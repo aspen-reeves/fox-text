@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fox-text/stuff"
 	"os"
 	"tcell"
 )
@@ -11,7 +12,7 @@ func run(s tcell.Screen, lines []string) {
 		os.Exit(0)
 	}
 	for {
-		printLines(s, lines)
+		stuff.PrintLines(s, lines)
 		s.Show()
 		ev := s.PollEvent()
 		switch ev := ev.(type) {
@@ -27,12 +28,12 @@ func run(s tcell.Screen, lines []string) {
 }
 
 func main() {
-	data, err := openFile()
+	data, err := stuff.OpenFile()
 	if err != nil {
 		panic(err)
 	}
-	s := initScreen()
-	lines := fileConvert(data)
+	s := stuff.InitScreen()
+	lines := stuff.FileConvert(data)
 	run(s, lines)
 
 }

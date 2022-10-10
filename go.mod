@@ -1,4 +1,4 @@
-module fox
+module fox-text
 
 go 1.19
 

@@ -1,4 +1,4 @@
-package main
+package stuff
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func openFile() ([]byte, error) {
+func OpenFile() ([]byte, error) {
 	var err error
 	if len(os.Args) < 2 {
 		err = errors.New("please provide a file name")
@@ -19,8 +19,8 @@ func openFile() ([]byte, error) {
 	}
 	return data, err
 }
-func saveFile(lines []string) error {
-	data := strToByte(lines)
+func SaveFile(lines []string) error {
+	data := StrToByte(lines)
 	if len(os.Args) < 2 {
 		err := errors.New("please provide a file name")
 		panic(err)
@@ -32,7 +32,7 @@ func saveFile(lines []string) error {
 	}
 	return nil
 }
-func fileConvert(data []byte) []string {
+func FileConvert(data []byte) []string {
 	//convert file to array of strings
 	lines := make([]string, 0)
 	for _, line := range bytes.Split(data, []byte{'\n'}) {
@@ -42,7 +42,7 @@ func fileConvert(data []byte) []string {
 	return lines
 
 }
-func strToByte(lines []string) []byte {
+func StrToByte(lines []string) []byte {
 	//convert array of strings to byte array
 	data := make([]byte, 0)
 	for i := 0; i < len(lines); i++ {
