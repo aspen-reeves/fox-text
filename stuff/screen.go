@@ -5,6 +5,15 @@ import (
 	"tcell"
 )
 
+type Bruh struct {
+	Lines   []string
+	XCursor int
+	YCursor int
+	XOffset int
+	YOffset int
+	Screen  tcell.Screen
+}
+
 // DrawText draws text on the screen.
 func DrawText(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style, text string) {
 	row := y1
@@ -23,18 +32,19 @@ func DrawText(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style, text string
 }
 
 // SetText draws all the data on the screen
-func SetText(s tcell.Screen, lines []string, begin int) {
-	w, h := s.Size()
-	s.Clear()
-	setFrame(s, 0, 0, w-1, h-1, tcell.StyleDefault)
+func SetText(scr Bruh) {
+	w, h := scr.Screen.Size()
+	scr.Screen.Clear()
+	setFrame(scr.Screen, 0, 0, w-1, h-1, tcell.StyleDefault)
 	for i := 0; i < h-2; i++ {
-		if i+begin < len(lines) {
-			DrawText(s, 1, i+1, w-2, h-2, tcell.StyleDefault, lines[i+begin])
+		if i+scr.YOffset < len(scr.Lines) {
+			DrawText(scr.Screen, 1, i+1, w-2, h-2, tcell.StyleDefault, scr.Lines[i+scr.YOffset])
 		}
 	}
 }
-func SetCursor(s tcell.Screen, x, y int) {
-	s.ShowCursor(x, y)
+func SetCursor(scr Bruh) {
+
+	scr.Screen.ShowCursor(scr.XCursor+1, scr.YCursor+1)
 }
 
 // SetFrame draws the border of a frame.

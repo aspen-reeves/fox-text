@@ -6,81 +6,89 @@ import (
 	"tcell"
 )
 
-func checkInput(s tcell.Screen, ev tcell.Event, lines []string, begin int, x int, y int) ([]string, int, int, int) {
-	_, h := s.Size()
+func checkInput(scr stuff.Bruh) stuff.Bruh {
+	ev := scr.Screen.PollEvent()
+	_, h := scr.Screen.Size()
 	switch ev := ev.(type) {
 	case *tcell.EventKey:
 		switch ev.Key() {
 		case tcell.KeyEscape:
-			s.Fini()
+			scr.Screen.Fini()
 			os.Exit(0)
 		case tcell.KeyCtrlC:
-			s.Fini()
+			scr.Screen.Fini()
 			os.Exit(0)
 		case tcell.KeyCtrlS:
-			stuff.SaveFile(lines)
+			stuff.SaveFile(scr.Lines)
 		case tcell.KeyEnter:
-			lines = stuff.LineEnter(lines, x, y)
-			//set cursor
-			y++
-			x = 1
+			scr = stuff.LineEnter(scr)
 
 		case tcell.KeyBackspace, tcell.KeyBackspace2:
-			lines = stuff.Backspace(lines, x, y)
-			if x > 1 {
-				x--
-			}
+			scr = stuff.Backspace(scr)
 
 		case tcell.KeyDelete:
-			lines = stuff.Delete(lines, x, y)
+			scr = stuff.Delete(scr)
 
 		case tcell.KeyUp:
 
-			if y > 1 {
-				y--
-			} else if y == 1 && begin > 0 {
-				begin--
+			if scr.YCursor > 1 {
+				scr.YCursor--
+			} else if scr.YCursor == 1 && scr.YOffset > 0 {
+				scr.YOffset--
+			}
+			if scr.XCursor > len(scr.Lines[scr.YCursor]) {
+				scr.XCursor = len(scr.Lines[scr.YCursor])
 			}
 
 		case tcell.KeyDown:
-			if y < len(lines) {
-				y++
-			} else if y >= h {
-				begin++
+			if scr.YCursor < len(scr.Lines)-1 {
+				scr.YCursor++
+			} else if scr.YCursor >= h {
+				scr.YOffset++
+			}
+			if scr.XCursor > len(scr.Lines[scr.YCursor]) {
+				scr.XCursor = len(scr.Lines[scr.YCursor])
 			}
 
 		case tcell.KeyLeft:
-			if x > 1 {
-				x--
+			if scr.XCursor > 0 {
+				scr.XCursor--
+
+			} else if scr.XCursor == 0 && scr.YCursor != 0 {
+				scr.XCursor = len(scr.Lines[scr.YCursor-1])
+				scr.YCursor--
 			}
 
 		case tcell.KeyRight:
-			if x < len(lines[y-1])+1 {
-				x++
+			if scr.XCursor < len(scr.Lines[scr.YCursor]) {
+				scr.XCursor++
+			} else if scr.XCursor == len(scr.Lines[scr.YCursor]) && scr.YCursor != len(scr.Lines)-1 {
+				scr.XCursor = 0
+				scr.YCursor++
 			}
 		case tcell.KeyRune:
-			lines[y-1] = lines[y-1][:(x-1)] + string(ev.Rune()) + lines[y-1][(x-1):]
-			x++
+			scr = stuff.Insert(scr, ev)
 		}
 	}
-	if x > len(lines[y-1]) {
-		x = len(lines[y-1]) + 1
-	}
 
-	return lines, x, y, begin
+	return scr
 }
 
 func run(s tcell.Screen, lines []string) {
-	//w, h := s.Size()
-	begin := 0
-	//set cursor
-	x, y := 1, 1
-
+	var scr stuff.Bruh
+	scr = stuff.Bruh{
+		Lines:   lines,
+		XCursor: 0,
+		YCursor: 0,
+		XOffset: 0,
+		YOffset: 0,
+		Screen:  s,
+	}
 	for {
-		stuff.SetText(s, lines, begin)
-		stuff.SetCursor(s, x, y)
+		stuff.SetText(scr)
+		stuff.SetCursor(scr)
 		s.Show()
-		lines, x, y, begin = checkInput(s, s.PollEvent(), lines, begin, x, y)
+		scr = checkInput(scr)
 	}
 }
 

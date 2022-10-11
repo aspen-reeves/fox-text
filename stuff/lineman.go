@@ -1,49 +1,63 @@
 package stuff
 
-func LineEnter(lines []string, x int, y int) []string {
+import "tcell"
+
+func LineEnter(scr Bruh) Bruh {
 	//convert cursor of screen to cursor of string
-	x--
-	y--
+
 	// make temp array of strings
-	temp := make([]string, len(lines)+1)
+	temp := make([]string, len(scr.Lines)+1)
 	for i := 0; i < len(temp); i++ {
-		if i < y {
-			temp[i] = lines[i]
-		} else if i == y {
-			temp[i] = lines[i][:x]
-		} else if i == (y + 1) {
-			temp[i] = lines[i-1][x:]
+		if i < scr.YCursor {
+			temp[i] = scr.Lines[i]
+		} else if i == scr.YCursor {
+			temp[i] = scr.Lines[i][:scr.XCursor]
+		} else if i == (scr.YCursor + 1) {
+			temp[i] = scr.Lines[i-1][scr.XCursor:]
 		} else {
-			temp[i] = lines[i-1]
+			temp[i] = scr.Lines[i-1]
 		}
 	}
-	return temp
+	scr.YCursor++
+	scr.XCursor = 0
+	scr.Lines = temp
+	return scr
 }
-func Backspace(lines []string, x int, y int) []string {
-	if x > 1 {
-		x--
-		y--
-		temp1 := lines[y][:x-1]
+func Backspace(scr Bruh) Bruh {
+	if scr.XCursor > 0 {
 
-		temp2 := lines[y][x:]
-		lines[y] = temp1 + temp2
-	} else if x == 1 && y > 1 {
-		x--
-		y--
-		lines[y-1] = lines[y-1] + lines[y]
-		for i := y; i < len(lines)-1; i++ {
-			lines[i] = lines[i+1]
+		temp1 := scr.Lines[scr.YCursor][:scr.XCursor-1]
+
+		temp2 := scr.Lines[scr.YCursor][scr.XCursor:]
+		scr.Lines[scr.YCursor] = temp1 + temp2
+		scr.XCursor--
+	} else if scr.XCursor == 0 && scr.YCursor > 0 {
+		temp := len(scr.Lines[scr.YCursor])
+		scr.Lines[scr.YCursor-1] = scr.Lines[scr.YCursor-1] + scr.Lines[scr.YCursor]
+		for i := scr.YCursor; i < len(scr.Lines); i++ {
+			if i == len(scr.Lines)-1 {
+				scr.Lines[i] = ""
+			} else {
+				scr.Lines[i] = scr.Lines[i+1]
+			}
 		}
+		scr.XCursor = len(scr.Lines[scr.YCursor-1]) - temp
+		scr.YCursor--
 
 	}
-	return lines
+	return scr
 }
-func Delete(lines []string, x int, y int) []string {
-	if x < len(lines[y-1]) {
-		x++ //we are not erasing what the cursor is on, but what is after it
-		temp1 := lines[y-1][:x-1]
-		temp2 := lines[y-1][x:]
-		lines[y-1] = temp1 + temp2
+func Insert(scr Bruh, ev *tcell.EventKey) Bruh {
+	scr.Lines[scr.YCursor] = scr.Lines[scr.YCursor][:scr.XCursor] + string(ev.Rune()) + scr.Lines[scr.YCursor][scr.XCursor:]
+	scr.XCursor++
+	return scr
+}
+func Delete(scr Bruh) Bruh {
+	if scr.XCursor < len(scr.Lines[scr.YCursor]) {
+		//we are not erasing what the cursor is on, but what is after it
+		temp1 := scr.Lines[scr.YCursor][:scr.XCursor]
+		temp2 := scr.Lines[scr.YCursor][scr.XCursor:]
+		scr.Lines[scr.YCursor] = temp1 + temp2
 	}
-	return lines
+	return scr
 }
