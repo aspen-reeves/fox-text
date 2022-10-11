@@ -32,7 +32,7 @@ func SaveFile(lines []string) error {
 	}
 	return nil
 }
-func FileConvert(data []byte) []string {
+func ByteToStr(data []byte) []string {
 	//convert file to array of strings
 	lines := make([]string, 0)
 	for _, line := range bytes.Split(data, []byte{'\n'}) {
