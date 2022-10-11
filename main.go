@@ -3,6 +3,18 @@ package main
 import (
 	"fox-text/stuff"
 	"os"
+)
+
+/*
+
+.___                              __
+|   | _____ ______   ____________/  |_  ______
+|   |/     \\____ \ /  _ \_  __ \   __\/  ___/
+|   |  Y Y  \  |_> >  <_> )  | \/|  |  \___ \
+|___|__|_|  /   __/ \____/|__|   |__| /____  >
+          \/|__|                           \/
+*/
+import (
 	"tcell"
 )
 
@@ -11,6 +23,13 @@ func checkInput(scr stuff.Bruh) stuff.Bruh {
 	_, h := scr.Screen.Size()
 	switch ev := ev.(type) {
 	case *tcell.EventKey:
+		/*
+			///// /   / ///// /   / /////
+			/      / /  /     //  /   /
+			/////  / /  ///// / / /   /
+			/      / /  /     /  //   /
+			/////   /   ///// /   /   /
+		*/
 		switch ev.Key() {
 		case tcell.KeyEscape:
 			scr.Screen.Fini()
@@ -74,6 +93,28 @@ func checkInput(scr stuff.Bruh) stuff.Bruh {
 	return scr
 }
 
+/*
+			 ,////,
+			 /// 6|
+			 //  _|
+			_/_,-'
+	   _.-/'/   \   ,/;,
+
+,-' /'  \_   \ / _/
+`\ /     _/\  ` /
+
+	|     /,  `\_/
+	|     \'
+
+	pb  /\_        /`      /\
+	  /' /_``--.__/\  `,. /  \
+	 |_/`  `-._     `\/  `\   `.
+	           `-.__/'     `\   |
+	                         `\  \
+	                           `\ \
+	                             \_\__
+	                              \___)
+*/
 func run(s tcell.Screen, lines []string) {
 	var scr stuff.Bruh
 	scr = stuff.Bruh{
