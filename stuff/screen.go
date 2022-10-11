@@ -50,17 +50,17 @@ func SetCursor(scr Bruh) {
 // SetFrame draws the border of a frame.
 func setFrame(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style) {
 	for x := x1; x <= x2; x++ {
-		s.SetContent(x, y1, '─', nil, style)
-		s.SetContent(x, y2, '─', nil, style)
+		s.SetContent(x, y1, '─', nil, style) // top
+		s.SetContent(x, y2, '─', nil, style) // bottom
 	}
 	for y := y1; y <= y2; y++ {
-		s.SetContent(x1, y, '│', nil, style)
-		s.SetContent(x2, y, '│', nil, style)
+		s.SetContent(x1, y, '│', nil, style) // left
+		s.SetContent(x2, y, '│', nil, style) // right
 	}
-	s.SetContent(x1, y1, '┌', nil, style)
-	s.SetContent(x2, y1, '┐', nil, style)
-	s.SetContent(x1, y2, '└', nil, style)
-	s.SetContent(x2, y2, '┘', nil, style)
+	s.SetContent(x1, y1, '┌', nil, style) // top-left
+	s.SetContent(x2, y1, '┐', nil, style) // top-right
+	s.SetContent(x1, y2, '└', nil, style) // bottom-left
+	s.SetContent(x2, y2, '┘', nil, style) // bottom-right
 }
 
 // initScreen initializes the screen

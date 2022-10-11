@@ -26,23 +26,23 @@ func LineEnter(scr Bruh) Bruh {
 func Backspace(scr Bruh) Bruh {
 	if scr.XCursor > 0 {
 
-		temp1 := scr.Lines[scr.YCursor][:scr.XCursor-1]
+		temp1 := scr.Lines[scr.YCursor][:scr.XCursor-1] //everything before cursor
 
-		temp2 := scr.Lines[scr.YCursor][scr.XCursor:]
-		scr.Lines[scr.YCursor] = temp1 + temp2
-		scr.XCursor--
-	} else if scr.XCursor == 0 && scr.YCursor > 0 {
-		temp := len(scr.Lines[scr.YCursor])
-		scr.Lines[scr.YCursor-1] = scr.Lines[scr.YCursor-1] + scr.Lines[scr.YCursor]
-		for i := scr.YCursor; i < len(scr.Lines); i++ {
-			if i == len(scr.Lines)-1 {
-				scr.Lines[i] = ""
-			} else {
-				scr.Lines[i] = scr.Lines[i+1]
+		temp2 := scr.Lines[scr.YCursor][scr.XCursor:] //everything after cursor
+		scr.Lines[scr.YCursor] = temp1 + temp2        //combine them
+		scr.XCursor--                                 //move cursor back
+	} else if scr.XCursor == 0 && scr.YCursor > 0 { //if we are at the beginning of a line
+		temp := len(scr.Lines[scr.YCursor])                                          //length of the line we are on
+		scr.Lines[scr.YCursor-1] = scr.Lines[scr.YCursor-1] + scr.Lines[scr.YCursor] //combine the lines
+		for i := scr.YCursor; i < len(scr.Lines); i++ {                              //move all lines up
+			if i == len(scr.Lines)-1 { //if we are at the last line
+				scr.Lines[i] = "" //set it to empty
+			} else { //if we are not at the last line
+				scr.Lines[i] = scr.Lines[i+1] //move the line up
 			}
 		}
-		scr.XCursor = len(scr.Lines[scr.YCursor-1]) - temp
-		scr.YCursor--
+		scr.XCursor = len(scr.Lines[scr.YCursor-1]) - temp //move cursor to end of previous line
+		scr.YCursor--                                      //move cursor up
 
 	}
 	return scr
@@ -60,4 +60,30 @@ func Delete(scr Bruh) Bruh {
 		scr.Lines[scr.YCursor] = temp1 + temp2
 	}
 	return scr
+}
+func DeleteLine(scr Bruh) Bruh {
+	for i := scr.YCursor; i < len(scr.Lines); i++ { //move all lines up
+		if i == len(scr.Lines)-1 { //if we are at the last line
+			scr.Lines[i] = "" //set it to empty
+		} else { //if we are not at the last line
+			scr.Lines[i] = scr.Lines[i+1] //move the line up
+		}
+	}
+	return scr
+}
+
+// split a line into words
+func SplitLine(scr Bruh) []string {
+	var words []string
+	var word string
+	for _, char := range scr.Lines[scr.YCursor] {
+		if char == ' ' {
+			words = append(words, word)
+			word = ""
+		} else {
+			word += string(char)
+		}
+	}
+	words = append(words, word)
+	return words
 }
