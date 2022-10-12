@@ -43,25 +43,57 @@ var asciiFox []string = []string{
 
 // SetText draws all the data on the screen
 func SetText(scr Bruh) {
-	scr.Screen.Clear()
-	setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset)
+	if scr.YOffset != 0 { // only clear the screen if the offset is not 0
+		scr.Screen.Clear() // this is slow
+		setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset)
+	}
+	//setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset) // maybe i shouldnt draw the border every time
 	_, h := scr.Screen.Size()
 
 	temp := scr.Lines[scr.YOffset:]
-	for i := 0; i < h-info.bottomWidth; i++ {
+	for i := 0; i < len(temp); i++ {
+		//we will make line numbers here
+		lineNum := fmt.Sprintf("%d", i+scr.YOffset+1)
 		for j := 0; j < len(temp[i]); j++ {
+			if j < len(lineNum) {
+				scr.Screen.SetContent(j+info.leftWidth, i+info.topWidth, rune(lineNum[j]), nil, tcell.StyleDefault)
+
+			}
+			info.variableWidth = len(lineNum) + info.leftWidth + 1
 			scr.Screen.SetContent(j+info.variableWidth, i+info.topWidth, rune(temp[i][j]), nil, tcell.StyleDefault)
 		}
-
+		if i >= (h - info.bottomWidth) {
+			break
+		}
 	}
 }
+
+// this will be a simpler function to draw the screen, to increase performance
+func InsertLine(scr *Bruh) {
+	i := scr.YCursor
+	temp := scr.Lines[i]
+	for j := 0; j < len(temp); j++ {
+		scr.Screen.SetContent(j+info.variableWidth+1, i+info.topWidth, rune(temp[j]), nil, tcell.StyleDefault)
+	}
+
+}
+
+// function to convert string cursor to absolute cursor
+func cursorStrToAbs(scr Bruh) (int, int) {
+	x := scr.XCursor + info.variableWidth
+	y := scr.YCursor + info.topWidth
+
+	return x, y
+}
+
 func SetCursor(scr Bruh) {
 	x := scr.XCursor + info.variableWidth
 	y := scr.YCursor + info.topWidth
 	_, h := scr.Screen.Size()
 	if y >= h-info.bottomWidth {
-		y = h - info.bottomWidth - 1
+		y = h - info.bottomWidth
 	}
+
 	scr.Screen.ShowCursor(x, y)
 }
 
@@ -77,8 +109,8 @@ func setFrame(s tcell.Screen, style tcell.Style, offset int) {
 		s.SetContent(x2, y, '│', nil, style) // right
 	}
 	// write line numbers
-	for i := 0; i < y2; i++ {
-		temp := fmt.Sprintf("%d", i+offset)
+	/*for i := 0; i < y2; i++ {
+		temp := fmt.Sprintf("%d", i+offset+1)
 		for j := 0; j < len(temp); j++ {
 			s.SetContent(j+info.leftWidth, i+info.topWidth, rune(temp[j]), nil, style)
 		}
@@ -86,7 +118,7 @@ func setFrame(s tcell.Screen, style tcell.Style, offset int) {
 			info.variableWidth = len(temp) + info.leftWidth + 1
 		}
 
-	}
+	}*/
 
 	for x := x1; x <= x2; x++ {
 		s.SetContent(x, y1, '─', nil, style) // top

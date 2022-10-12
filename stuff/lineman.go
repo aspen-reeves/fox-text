@@ -45,11 +45,14 @@ func Backspace(scr Bruh) Bruh {
 	}
 	return scr
 }
+
 func Insert(scr Bruh, ev *tcell.EventKey) Bruh {
-	scr.Lines[scr.YCursor] = scr.Lines[scr.YCursor][:scr.XCursor] + string(ev.Rune()) + scr.Lines[scr.YCursor][scr.XCursor:]
+	//scr.Lines[scr.YCursor] = scr.Lines[scr.YCursor][:scr.XCursor] + string(ev.Rune()) + scr.Lines[scr.YCursor][scr.XCursor:]
+	InsertLine(&scr)
 	scr.XCursor++
 	return scr
 }
+
 func Delete(scr Bruh) Bruh {
 	if scr.XCursor < len(scr.Lines[scr.YCursor]) {
 		//we are not erasing what the cursor is on, but what is after it
@@ -59,6 +62,7 @@ func Delete(scr Bruh) Bruh {
 	}
 	return scr
 }
+
 func DeleteLine(scr Bruh) Bruh {
 	for i := scr.YCursor; i < len(scr.Lines); i++ { //move all lines up
 		if i == len(scr.Lines)-1 { //if we are at the last line
