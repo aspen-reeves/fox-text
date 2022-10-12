@@ -108,17 +108,6 @@ func setFrame(s tcell.Screen, style tcell.Style, offset int) {
 		s.SetContent(x1, y, '│', nil, style) // right
 		s.SetContent(x2, y, '│', nil, style) // right
 	}
-	// write line numbers
-	/*for i := 0; i < y2; i++ {
-		temp := fmt.Sprintf("%d", i+offset+1)
-		for j := 0; j < len(temp); j++ {
-			s.SetContent(j+info.leftWidth, i+info.topWidth, rune(temp[j]), nil, style)
-		}
-		if len(temp) > info.variableWidth {
-			info.variableWidth = len(temp) + info.leftWidth + 1
-		}
-
-	}*/
 
 	for x := x1; x <= x2; x++ {
 		s.SetContent(x, y1, '─', nil, style) // top
