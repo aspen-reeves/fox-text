@@ -5,6 +5,8 @@ import (
 	"tcell"
 )
 
+//TODO color
+
 type Bruh struct {
 	Lines   []string
 	XCursor int
