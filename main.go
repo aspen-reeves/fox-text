@@ -1,20 +1,12 @@
 package main
 
+//   |\__/|
+//  /     \
+// /_.~ ~,_\
+//    \@/
 import (
 	"fox-text/stuff"
 	"os"
-)
-
-/*
-
-.___                              __
-|   | _____ ______   ____________/  |_  ______
-|   |/     \\____ \ /  _ \_  __ \   __\/  ___/
-|   |  Y Y  \  |_> >  <_> )  | \/|  |  \___ \
-|___|__|_|  /   __/ \____/|__|   |__| /____  >
-          \/|__|                           \/
-*/
-import (
 	"tcell"
 )
 
@@ -23,13 +15,7 @@ func checkInput(scr stuff.Bruh) stuff.Bruh {
 	_, h := scr.Screen.Size()
 	switch ev := ev.(type) {
 	case *tcell.EventKey:
-		/*
-			///// /   / ///// /   / /////
-			/      / /  /     //  /   /
-			/////  / /  ///// / / /   /
-			/      / /  /     /  //   /
-			/////   /   ///// /   /   /
-		*/
+
 		switch ev.Key() {
 		case tcell.KeyEscape:
 			scr.Screen.Fini()
@@ -50,7 +36,7 @@ func checkInput(scr stuff.Bruh) stuff.Bruh {
 
 		case tcell.KeyUp:
 
-			if scr.YCursor > 1 {
+			if scr.YCursor > 0 {
 				scr.YCursor--
 			} else if scr.YCursor == 1 && scr.YOffset > 0 {
 				scr.YOffset--
