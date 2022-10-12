@@ -7,12 +7,12 @@ package main
 import (
 	"fox-text/stuff"
 	"os"
-	"tcell"
+
+	"github.com/gdamore/tcell/v2"
 )
 
 func checkInput(scr stuff.Bruh) stuff.Bruh {
 	ev := scr.Screen.PollEvent()
-	_, h := scr.Screen.Size()
 	switch ev := ev.(type) {
 	case *tcell.EventKey:
 
@@ -36,24 +36,10 @@ func checkInput(scr stuff.Bruh) stuff.Bruh {
 
 		case tcell.KeyUp:
 
-			if scr.YCursor > 0 {
-				scr.YCursor--
-			} else if scr.YCursor == 1 && scr.YOffset > 0 {
-				scr.YOffset--
-			}
-			if scr.XCursor > len(scr.Lines[scr.YCursor]) {
-				scr.XCursor = len(scr.Lines[scr.YCursor])
-			}
+			scr = stuff.KeyUp(scr)
 
 		case tcell.KeyDown:
-			if scr.YCursor < len(scr.Lines)-1 {
-				scr.YCursor++
-			} else if scr.YCursor >= h {
-				scr.YOffset++
-			}
-			if scr.XCursor > len(scr.Lines[scr.YCursor]) {
-				scr.XCursor = len(scr.Lines[scr.YCursor])
-			}
+			scr = stuff.KeyDown(scr)
 
 		case tcell.KeyLeft:
 			if scr.XCursor > 0 {

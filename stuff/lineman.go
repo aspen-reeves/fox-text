@@ -1,11 +1,8 @@
 package stuff
 
-import "tcell"
+import "github.com/gdamore/tcell/v2"
 
 func LineEnter(scr Bruh) Bruh {
-	//convert cursor of screen to cursor of string
-
-	// make temp array of strings
 	temp := make([]string, len(scr.Lines)+1)
 	for i := 0; i < len(temp); i++ {
 		if i < scr.YCursor {
@@ -18,11 +15,12 @@ func LineEnter(scr Bruh) Bruh {
 			temp[i] = scr.Lines[i-1]
 		}
 	}
-	scr.YCursor++
+	scr = KeyDown(scr)
 	scr.XCursor = 0
 	scr.Lines = temp
 	return scr
 }
+
 func Backspace(scr Bruh) Bruh {
 	if scr.XCursor > 0 {
 

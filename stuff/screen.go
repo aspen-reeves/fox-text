@@ -1,8 +1,10 @@
 package stuff
 
 import (
+	"fmt"
 	"log"
-	"tcell"
+
+	"github.com/gdamore/tcell/v2"
 )
 
 //TODO color
@@ -16,79 +18,99 @@ type Bruh struct {
 	Screen  tcell.Screen
 }
 type borderInfo struct {
-	topWidth     int
-	bottomWidth  int
-	leftWidth    int
-	rightWidth   int
-	lineNumWidth int
+	topWidth      int
+	bottomWidth   int
+	leftWidth     int
+	variableWidth int
+	rightWidth    int
 }
 
 var info borderInfo = borderInfo{ // set the border width
-	topWidth:     1,
-	bottomWidth:  1,
-	leftWidth:    1,
-	rightWidth:   1,
-	lineNumWidth: 4,
+	topWidth:      5,
+	bottomWidth:   1,
+	leftWidth:     1,
+	rightWidth:    1,
+	variableWidth: 1, // should start at leftWidth, added by the line numbers
 }
 
-// DrawText draws text on the screen.
-func DrawText(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style, text string) {
-	row := y1
-	col := x1
-	for _, r := range []rune(text) {
-		s.SetContent(col, row, r, nil, style)
-		col++
-		if col >= x2 {
-			row++
-			col = x1
-		}
-		if row > y2 {
-			break
-		}
-	}
+var asciiFox []string = []string{
+	// split into runes so go doesn't complain
+	" \\     |\\__/|    / ",
+	"  \\   /     \\   /  ",
+	"   \\ /_.~ ~,_\\ /   ",
+	"    \\   \\@/   /    ",
 }
 
 // SetText draws all the data on the screen
 func SetText(scr Bruh) {
-	//w, h := scr.Screen.Size()
 	scr.Screen.Clear()
-	setFrame(scr.Screen, tcell.StyleDefault)
-	for i := scr.YOffset; i < len(scr.Lines); i++ {
-		for j := 0; j < len(scr.Lines[i]); j++ {
+	setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset)
+	_, h := scr.Screen.Size()
 
-			// left
-
-			scr.Screen.SetContent(j+info.leftWidth, i+info.topWidth, rune(scr.Lines[i][j]), nil, tcell.StyleDefault)
+	temp := scr.Lines[scr.YOffset:]
+	for i := 0; i < h-info.bottomWidth; i++ {
+		for j := 0; j < len(temp[i]); j++ {
+			scr.Screen.SetContent(j+info.variableWidth, i+info.topWidth, rune(temp[i][j]), nil, tcell.StyleDefault)
 		}
 
 	}
-
 }
 func SetCursor(scr Bruh) {
-
-	scr.Screen.ShowCursor(scr.XCursor+info.leftWidth, scr.YCursor+info.rightWidth)
+	x := scr.XCursor + info.variableWidth
+	y := scr.YCursor + info.topWidth
+	_, h := scr.Screen.Size()
+	if y >= h-info.bottomWidth {
+		y = h - info.bottomWidth - 1
+	}
+	scr.Screen.ShowCursor(x, y)
 }
 
 // SetFrame draws the border of a frame.
-func setFrame(s tcell.Screen, style tcell.Style) {
+func setFrame(s tcell.Screen, style tcell.Style, offset int) {
 	x1 := 0
 	y1 := 0
 	x2, y2 := s.Size()
 	x2--
 	y2--
-
 	for y := y1; y <= y2; y++ {
 		s.SetContent(x1, y, '│', nil, style) // right
 		s.SetContent(x2, y, '│', nil, style) // right
 	}
+	// write line numbers
+	for i := 0; i < y2; i++ {
+		temp := fmt.Sprintf("%d", i+offset)
+		for j := 0; j < len(temp); j++ {
+			s.SetContent(j+info.leftWidth, i+info.topWidth, rune(temp[j]), nil, style)
+		}
+		if len(temp) > info.variableWidth {
+			info.variableWidth = len(temp) + info.leftWidth + 1
+		}
+
+	}
+
 	for x := x1; x <= x2; x++ {
 		s.SetContent(x, y1, '─', nil, style) // top
+	}
+	// write the fox to the center top of the screen
+	for i := 0; i < len(asciiFox); i++ {
+		for j := 0; j < len(asciiFox[i]); j++ {
+			s.SetContent(j+x2/2-len(asciiFox[i])/2, i+y1, rune(asciiFox[i][j]), nil, style)
+		}
+	}
+
+	for x := x1; x <= x2; x++ {
 		s.SetContent(x, y2, '─', nil, style) // bottom
 	}
 	s.SetContent(x1, y1, '┌', nil, style) // top-left
 	s.SetContent(x2, y1, '┐', nil, style) // top-right
 	s.SetContent(x1, y2, '└', nil, style) // bottom-left
 	s.SetContent(x2, y2, '┘', nil, style) // bottom-right
+	//debug
+	//output w and h of the screen
+	temp := fmt.Sprintf("w: %d, h: %d", x2, y2)
+	for i := 0; i < len(temp); i++ {
+		s.SetContent(i, 0, rune(temp[i]), nil, style)
+	}
 }
 
 // initScreen initializes the screen
@@ -103,6 +125,6 @@ func InitScreen() tcell.Screen {
 	defStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
 	s.SetStyle(defStyle)
 	s.Clear()
-	setFrame(s, defStyle)
+	setFrame(s, defStyle, 0)
 	return s
 }
