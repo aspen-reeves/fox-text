@@ -49,23 +49,37 @@ func SetText(scr Bruh) {
 	}
 	//setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset) // maybe i shouldnt draw the border every time
 	_, h := scr.Screen.Size()
-
+	drawLineNumbers(scr)
 	temp := scr.Lines[scr.YOffset:]
-	for i := 0; i < len(temp); i++ {
+	for i := 0; i < len(temp)-info.bottomWidth; i++ {
 		//we will make line numbers here
-		lineNum := fmt.Sprintf("%d", i+scr.YOffset+1)
 		for j := 0; j < len(temp[i]); j++ {
-			if j < len(lineNum) {
-				scr.Screen.SetContent(j+info.leftWidth, i+info.topWidth, rune(lineNum[j]), nil, tcell.StyleDefault)
 
-			}
-			info.variableWidth = len(lineNum) + info.leftWidth + 1
 			scr.Screen.SetContent(j+info.variableWidth, i+info.topWidth, rune(temp[i][j]), nil, tcell.StyleDefault)
 		}
 		if i >= (h - info.bottomWidth) {
 			break
 		}
 	}
+	//debug
+	//draw offset at top left
+	offset := fmt.Sprintf("offset: %d", scr.YOffset)
+	for i := 0; i < len(offset); i++ {
+		scr.Screen.SetContent(i+20, 0, rune(offset[i]), nil, tcell.StyleDefault)
+	}
+}
+func drawLineNumbers(scr Bruh) {
+	_, h := scr.Screen.Size()
+	for i := info.topWidth; i < h-(info.bottomWidth); i++ {
+		temp := fmt.Sprintf("%d", i-info.topWidth+scr.YOffset)
+		for j := 0; j < len(temp); j++ {
+			scr.Screen.SetContent(j+info.leftWidth, i, rune(temp[j]), nil, tcell.StyleDefault)
+		}
+		if info.variableWidth < len(temp) {
+			info.variableWidth = len(temp) + info.leftWidth + 1
+		}
+	}
+
 }
 
 // this will be a simpler function to draw the screen, to increase performance
@@ -88,7 +102,7 @@ func cursorStrToAbs(scr Bruh) (int, int) {
 
 func SetCursor(scr Bruh) {
 	x := scr.XCursor + info.variableWidth
-	y := scr.YCursor + info.topWidth
+	y := scr.YCursor + info.topWidth + scr.YOffset
 	_, h := scr.Screen.Size()
 	if y >= h-info.bottomWidth {
 		y = h - info.bottomWidth

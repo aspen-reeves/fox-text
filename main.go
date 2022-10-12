@@ -6,7 +6,7 @@ package main
 //    \@/
 // welcom to fox-text
 import (
-	"fox-text/stuff"
+	"vulpes-text/stuff"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -23,7 +23,7 @@ func run(s tcell.Screen, lines []string) {
 	}
 	stuff.SetText(scr)
 	for {
-		//stuff.SetText(scr)
+		stuff.SetText(scr)
 		stuff.SetCursor(scr)
 		s.Show()
 		scr = stuff.CheckInput(scr)

@@ -21,20 +21,20 @@ func CheckInput(scr Bruh) Bruh {
 		case tcell.KeyCtrlS:
 			SaveFile(scr.Lines)
 		case tcell.KeyEnter:
-			scr = LineEnter(scr)
+			Enter(&scr)
 
 		case tcell.KeyBackspace, tcell.KeyBackspace2:
-			scr = Backspace(scr)
+			Backspace(&scr)
 
 		case tcell.KeyDelete:
-			scr = Delete(scr)
+			Delete(&scr)
 
 		case tcell.KeyUp:
 
 			scr = KeyUp(scr)
 
 		case tcell.KeyDown:
-			scr = KeyDown(scr)
+			KeyDown(&scr)
 
 		case tcell.KeyLeft:
 			if scr.XCursor > 0 {
@@ -59,14 +59,16 @@ func CheckInput(scr Bruh) Bruh {
 
 	return scr
 }
-func KeyDown(scr Bruh) Bruh {
+
+func KeyDown(scr *Bruh) {
 	_, h := scr.Screen.Size()
 
 	if scr.YCursor < len(scr.Lines)-1 {
-		scr.YCursor++
 		if scr.YCursor > h-info.bottomWidth-info.topWidth-1 {
 			scr.YOffset++
 		}
+		scr.YCursor++
+
 	}
 
 	if scr.XCursor > len(scr.Lines[scr.YCursor]) {
@@ -76,8 +78,6 @@ func KeyDown(scr Bruh) Bruh {
 	if scr.YOffset > len(scr.Lines)-h+info.bottomWidth+info.topWidth+1 {
 		scr.YOffset = len(scr.Lines) - h + info.bottomWidth + info.topWidth + 1
 	}
-
-	return scr
 }
 func KeyUp(scr Bruh) Bruh {
 	if scr.YCursor > 0 {

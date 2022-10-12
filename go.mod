@@ -1,4 +1,4 @@
-module fox-text
+module vulpes-text
 
 go 1.19
 
