@@ -1,2 +1,3 @@
 # vulpes-text
-nah
+- it doesnt work
+- uhh idk
