@@ -49,16 +49,12 @@ func SetText(scr Bruh) {
 	}
 	//setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset) // maybe i shouldnt draw the border every time
 	_, h := scr.Screen.Size()
+	txtHeight := h - info.topWidth - info.bottomWidth
 	drawLineNumbers(scr)
-	temp := scr.Lines[scr.YOffset:]
-	for i := 0; i < len(temp)-info.bottomWidth; i++ {
-		//we will make line numbers here
+	temp := scr.Lines[scr.YOffset : scr.YOffset+txtHeight]
+	for i := 0; i < len(temp); i++ {
 		for j := 0; j < len(temp[i]); j++ {
-
 			scr.Screen.SetContent(j+info.variableWidth, i+info.topWidth, rune(temp[i][j]), nil, tcell.StyleDefault)
-		}
-		if i >= (h - info.bottomWidth) {
-			break
 		}
 	}
 	//debug
@@ -102,7 +98,7 @@ func cursorStrToAbs(scr Bruh) (int, int) {
 
 func SetCursor(scr Bruh) {
 	x := scr.XCursor + info.variableWidth
-	y := scr.YCursor + info.topWidth + scr.YOffset
+	y := scr.YCursor + info.topWidth - scr.YOffset
 	_, h := scr.Screen.Size()
 	if y >= h-info.bottomWidth {
 		y = h - info.bottomWidth
