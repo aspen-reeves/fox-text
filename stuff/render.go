@@ -3,6 +3,7 @@ package stuff
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -43,14 +44,13 @@ var asciiFox []string = []string{
 
 // SetText draws all the data on the screen
 func SetText(scr Bruh) {
-	if scr.YOffset != 0 { // only clear the screen if the offset is not 0
-		scr.Screen.Clear() // this is slow
-		setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset)
-	}
-	//setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset) // maybe i shouldnt draw the border every time
+	//if scr.YOffset != 0 { // only clear the screen if the offset is not 0
+	scr.Screen.Clear() // this is slow
+	setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset)
+	//}
 	_, h := scr.Screen.Size()
-	txtHeight := h - info.topWidth - info.bottomWidth
-	drawLineNumbers(scr)
+	txtHeight := h - info.topWidth - info.bottomWidth // height of the text area
+	drawLineNumbers(scr)                              // draw the line numbers
 	temp := scr.Lines[scr.YOffset : scr.YOffset+txtHeight]
 	for i := 0; i < len(temp); i++ {
 		for j := 0; j < len(temp[i]); j++ {
@@ -66,15 +66,18 @@ func SetText(scr Bruh) {
 }
 func drawLineNumbers(scr Bruh) {
 	_, h := scr.Screen.Size()
+	tempLine := 0
 	for i := info.topWidth; i < h-(info.bottomWidth); i++ {
 		temp := fmt.Sprintf("%d", i-info.topWidth+scr.YOffset)
 		for j := 0; j < len(temp); j++ {
 			scr.Screen.SetContent(j+info.leftWidth, i, rune(temp[j]), nil, tcell.StyleDefault)
 		}
-		if info.variableWidth < len(temp) {
-			info.variableWidth = len(temp) + info.leftWidth + 1
+		if tempLine < len(temp) {
+			tempLine = len(temp)
 		}
+
 	}
+	info.variableWidth = tempLine + info.leftWidth + 1
 
 }
 
@@ -94,6 +97,52 @@ func cursorStrToAbs(scr Bruh) (int, int) {
 	y := scr.YCursor + info.topWidth
 
 	return x, y
+}
+func FileExplorer(scr tcell.Screen) tcell.Screen {
+
+	//first we have to get the current directory
+	path, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	//then we have to get the files in the directory
+	files, err := os.ReadDir(path)
+	if err != nil {
+		panic(err)
+	}
+	//then we have to draw the files
+	for i := 0; i < len(files); i++ {
+		for j := 0; j < len(files[i].Name()); j++ {
+			if j > info.leftWidth-1 {
+				break
+			}
+			scr.SetContent(j+1, i+info.topWidth, rune(files[i].Name()[j]), nil, tcell.StyleDefault)
+		}
+	}
+	//draw border box
+	_, h := scr.Size()
+	//draw top border
+	for i := 1; i < info.leftWidth-1; i++ {
+		scr.SetContent(i, info.topWidth-1, '─', nil, tcell.StyleDefault)
+	}
+	// draw right border
+	for i := info.topWidth; i < h-1; i++ {
+		scr.SetContent(info.leftWidth-1, i, '│', nil, tcell.StyleDefault)
+	}
+	scr.SetContent(info.leftWidth-1, info.topWidth-1, '┐', nil, tcell.StyleDefault)
+	scr.SetContent(0, info.topWidth-1, '├', nil, tcell.StyleDefault)
+	scr.SetContent(info.leftWidth-1, h-1, '┴', nil, tcell.StyleDefault)
+
+	return scr
+
+}
+func RefreshScreen(scr Bruh) {
+	scr.Screen.Clear()
+	setFrame(scr.Screen, tcell.StyleDefault, scr.YOffset)
+	SetText(scr)
+	SetCursor(scr)
+	scr.Screen.Show()
+
 }
 
 func SetCursor(scr Bruh) {
@@ -136,6 +185,9 @@ func setFrame(s tcell.Screen, style tcell.Style, offset int) {
 	s.SetContent(x2, y1, '┐', nil, style) // top-right
 	s.SetContent(x1, y2, '└', nil, style) // bottom-left
 	s.SetContent(x2, y2, '┘', nil, style) // bottom-right
+	//draw file explorer
+	info.leftWidth = x2 / 6
+	s = FileExplorer(s)
 	//debug
 	//output w and h of the screen
 	temp := fmt.Sprintf("w: %d, h: %d", x2, y2)
@@ -157,5 +209,6 @@ func InitScreen() tcell.Screen {
 	s.SetStyle(defStyle)
 	s.Clear()
 	setFrame(s, defStyle, 0)
+
 	return s
 }

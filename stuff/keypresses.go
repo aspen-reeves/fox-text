@@ -55,6 +55,8 @@ func CheckInput(scr Bruh) Bruh {
 		case tcell.KeyRune:
 			scr = Insert(scr, ev)
 		}
+	case *tcell.EventResize:
+		RefreshScreen(scr)
 	}
 
 	return scr
