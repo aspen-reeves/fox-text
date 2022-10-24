@@ -51,7 +51,12 @@ func SetText(scr Bruh) {
 	_, h := scr.Screen.Size()
 	txtHeight := h - info.topWidth - info.bottomWidth // height of the text area
 	drawLineNumbers(scr)                              // draw the line numbers
-	temp := scr.Lines[scr.YOffset : scr.YOffset+txtHeight]
+	var temp []string
+	if len(scr.Lines) < scr.YOffset+txtHeight {
+		temp = scr.Lines[scr.YOffset:]
+	} else {
+		temp = scr.Lines[scr.YOffset : scr.YOffset+txtHeight]
+	}
 	for i := 0; i < len(temp); i++ {
 		for j := 0; j < len(temp[i]); j++ {
 			scr.Screen.SetContent(j+info.variableWidth, i+info.topWidth, rune(temp[i][j]), nil, tcell.StyleDefault)
