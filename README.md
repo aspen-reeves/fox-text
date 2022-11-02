@@ -15,18 +15,22 @@
 - run `./vulpes-text [file]`
 
 #how to use
-- use the arrow keys to move the cursor
-- use the backspace key to delete characters
-- use the enter key to make a new line
 - use the escape key to exit
 
 #how to contribute
 - make a pull request
 
 #future plans
-- add a file explorer
-- add a terminal
-- add a file manager
+- add a file browser
+- add code highlighting, using some language server
+- basically make it a full fledged IDE
+- then make it a full fledged OS
+- then use it to take over the world
+- it shall be glorious 
+- the only software you will ever need
+- it will do everything, and it will do it well
+- it will be the best
+- the only thing stopping it is me and my laziness
 
 #implementation details
 - it uses the tcell library for the console interface
