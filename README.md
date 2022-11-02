@@ -9,7 +9,7 @@
 - It's not very fast
 - It's not very stable
 
-#how to install
+#how to run
 - clone the repo
 - run `go build`
 - run `./vulpes-text [file]`
