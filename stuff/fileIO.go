@@ -16,6 +16,7 @@ func OpenFile() ([]byte, error) {
 	if err != nil {
 		err = errors.New("cant read file")
 		panic(err)
+		//crash the fucking program if god forbid  the file doesnt exist
 	}
 	return data, err
 }
@@ -28,9 +29,11 @@ func SaveFile(lines []string) error {
 	}
 	err := os.WriteFile(os.Args[1], data, 0644) //write to file
 	if err != nil {
-		err = errors.New("cant write file")
+		err = errors.New("cant write to file")
 		panic(err)
+		//crash the fucking program if god forbid  the file doesnt exist
 	}
+
 	return nil
 }
 func ByteToStr(data []byte) []string {

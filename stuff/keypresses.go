@@ -65,7 +65,7 @@ func CheckInput(scr Bruh) Bruh {
 func KeyDown(scr *Bruh) {
 	_, h := scr.Screen.Size()
 
-	if scr.YCursor < len(scr.Lines)-1 {
+	if scr.YCursor < len(scr.Lines)-1-info.bottomWidth {
 		if scr.YCursor > h-info.bottomWidth-info.topWidth-1 {
 			scr.YOffset++
 		}
@@ -77,9 +77,9 @@ func KeyDown(scr *Bruh) {
 		scr.XCursor = len(scr.Lines[scr.YCursor])
 	}
 	//check if offset is too big
-	if scr.YOffset > len(scr.Lines)-h+info.bottomWidth+info.topWidth+1 {
-		scr.YOffset = len(scr.Lines) - h + info.bottomWidth + info.topWidth + 1
-	}
+	//if scr.YOffset > len(scr.Lines)-(h+info.bottomWidth+info.topWidth) {
+	//	scr.YOffset = len(scr.Lines) - (h + info.bottomWidth + info.topWidth)
+	//}
 }
 func KeyUp(scr Bruh) Bruh {
 	if scr.YCursor > 0 {
